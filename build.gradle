@@ -1,0 +1,18 @@
+
+plugins {
+    id 'java'
+}
+
+group 'science.coin-coin'
+version '0.1-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+}
