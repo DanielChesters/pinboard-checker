@@ -3,9 +3,6 @@ package science.coincoin.pinboardChecker.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 /**
  * @author Daniel Chesters (on 20/06/2018).
  */

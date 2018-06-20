@@ -11,6 +11,7 @@ import science.coincoin.pinboardChecker.model.URL;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -46,16 +47,16 @@ public class PinboardChecker {
     }
 
     public void checkURLs(List<URL> URLs) {
-        OkHttpClient client = new OkHttpClient();
-        URLs.forEach(url -> {
+        AtomicInteger count = new AtomicInteger();
+        URLs.parallelStream().forEach(url -> {
+            OkHttpClient client = new OkHttpClient();
             Request request =
                 new Request.Builder()
                     .url(url.getHref())
-                    .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0")
+                    .header("User-Agent",
+                        "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0")
                     .head().build();
-            final Response response;
-            try {
-                response = client.newCall(request).execute();
+            try (final Response response = client.newCall(request).execute()) {
                 url.setStatus(response.code());
                 url.setMessage(response.message());
                 url.setSuccessful(response.isSuccessful());
@@ -63,6 +64,10 @@ public class PinboardChecker {
                 url.setStatus(999);
                 url.setMessage(e.getMessage());
                 url.setSuccessful(false);
+            }
+            final int i = count.incrementAndGet();
+            if (i % 100 == 0 || i == URLs.size()) {
+                System.out.println(String.format("checkURLs : %d/%d", i, URLs.size()));
             }
         });
     }
